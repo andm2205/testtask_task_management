@@ -1,0 +1,33 @@
+﻿@model IEnumerable<AppTask>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@section TaskListContainer {
+    <ul id="task.list">
+        @if(Model != null)
+        {
+            @foreach(var appTask in Model)
+            {
+                <li class="task">@appTask.Name</li>
+            }
+        }
+    </ul>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                type: 'GET',
+                url: '/Home/Index',
+                success: function (html) {
+                    alert('success');
+                },
+                error: function (error) {
+                    alert('error');
+                }
+            })
+        })
+    </script>
+}

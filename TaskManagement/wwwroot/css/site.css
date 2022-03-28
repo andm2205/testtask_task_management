@@ -1,0 +1,47 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  height: 100%;
+}
+
+main {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    align-items: stretch;
+}
+
+aside#task_list_container {
+    width: 500px;
+    background-color: #E0E0E0;
+}
+
+article#task_desc_container {
+    flex-grow: 1;
+    background-color: #F4F4F4;
+}
+
+ul#task_list {
+    list-style-type: none;
+}
+
+ul#task_list li.task {
+    background-color: #A5A5A5;
+}
