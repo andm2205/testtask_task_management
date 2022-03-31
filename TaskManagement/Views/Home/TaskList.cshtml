@@ -1,1 +1,10 @@
-﻿
+﻿@model IEnumerable<AppTask>
+<ul id="task_list">
+    @if(Model != null)
+    {
+        @foreach(var appTask in Model)
+        {
+            <li asp-controller="Home" asp-action="TaskDesc" class="task">@appTask.Name</li>
+        }
+    }
+</ul>

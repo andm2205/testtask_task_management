@@ -1,4 +1,38 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿jQueryAjaxGetList = form => {
+    try {
+        $.ajax({
+            type: 'POST',
+            url: form.action,
+            data: new FormData(form),
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                $('#task_list_container').html(res.html)
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+        return false;
+    } catch (ex) {
+        console.log(ex)
+    }
+}
 
-// Write your JavaScript code.
+jQueryAjaxOpenForm = (formUrl) => {
+    try {
+        $.ajax({
+            type: 'GET',
+            url: formUrl,
+            success: function (res) {
+                $('#task_desc_container').html(res.html)
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+        return false;
+    } catch (ex) {
+        console.log(ex)
+    }
+}
