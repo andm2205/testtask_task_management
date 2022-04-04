@@ -1,1 +1,67 @@
-﻿
+﻿@model TaskManagement.Models.AppTask
+
+@if(Model != null)
+{
+    <div class="row">
+        <div class="col">
+            <form class="classic-form" onsubmit="return jQueryAjaxActionOnTask(this, '@Url.Action("UpdateTask", "Home")');">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label">Название</label>
+                    <input asp-for="Name" class="form-control" value="@Model.Name"/>
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label">Описание</label>
+                    <textarea asp-for="Description" class="form-control" value="@Model.Description" style="height: 100px; resize: none;"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Performers" class="control-label">Исполнители</label>
+                    <input asp-for="Performers" class="form-control" value="@Model.Performers" />
+                    <span asp-validation-for="Performers" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="RegistrationDate" class="control-label">Дата создания</label>
+                    <input asp-for="RegistrationDate" class="form-control" value="@Model.RegistrationDate.ToString("yyyy-MM-ddThh:mm")" />
+                    <span asp-validation-for="RegistrationDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Status" class="control-label">Статус</label>
+                    <select asp-for="Status" asp-items="Html.GetEnumSelectList<Status>()" class="form-control">@Model.Status</select>
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ScheduledExecutionTime" class="control-label">Плановая трудоемкость, часов</label>
+                    <input asp-for="ScheduledExecutionTime" class="form-control" value="@Model.ScheduledExecutionTime"/>
+                    <span asp-validation-for="ScheduledExecutionTime" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ActualExecutionTime" class="control-label">Фактическое время выполнения</label>
+                    <input asp-for="ActualExecutionTime" class="form-control" value="@Model.ActualExecutionTime"/>
+                    <span asp-validation-for="ActualExecutionTime" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CompletionDate" class="control-label">Дата завершения</label>
+                    <input asp-for="CompletionDate" class="form-control" value="@Model.CompletionDate?.ToString("yyyy-MM-ddThh:mm")"/>
+                    <span asp-validation-for="CompletionDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Обновить" class="btn btn-primary"/>
+                </div>
+            </form>
+            <form class="classic-form"
+                onsubmit="return jQueryAjaxActionOnTask(this, '@Url.Action("DeleteTask", "Home")');">
+                <input type="hidden" asp-for="@Model.Id"/>
+                <div class="form-group">
+                    <input type="submit" value="Удалить" class="btn btn-danger"/>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <p>Задача не найдена</p>
+}

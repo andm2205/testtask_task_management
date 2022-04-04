@@ -28,20 +28,33 @@ main {
     align-items: stretch;
 }
 
-aside#task_list_container {
+aside#aside_container {
     width: 500px;
     background-color: #E0E0E0;
+    overflow-x: auto;
 }
 
 article#task_desc_container {
     flex-grow: 1;
     background-color: #F4F4F4;
+    width: 100%;
 }
 
 ul#task_list {
     list-style-type: none;
+    padding: 5px;
 }
 
 ul#task_list li.task {
     background-color: #A5A5A5;
+    margin: 5px;
+}
+
+form.classic-form {
+    width: 500px;
+    margin: 10px;
+}
+
+form.classic-form > .form-group {
+    margin-bottom: 10px;
 }

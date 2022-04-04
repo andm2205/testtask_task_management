@@ -1,43 +1,32 @@
 ﻿@model TaskManagement.Models.AppTask
 
-@section TaskDescContainer {
-    <div class="row">
-        <div class="col-6 m-2">
-            <form asp-action="CreateTask" asp-route-id="@Model.Id" onsubmit="return jQueryAjaxGetList(this)">
+<div class="row">
+        <div class="col">
+            <form class="classic-form" onsubmit="return jQueryAjaxActionOnTask(this, '@Url.Action("CreateTask", "Home")')">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group mb-2">
+                <div class="form-group">
                     <label asp-for="Name" class="control-label">Название</label>
                     <input asp-for="Name" class="form-control" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
-                <div class="form-group mb-2">
+                <div class="form-group">
                     <label asp-for="Description" class="control-label">Описание</label>
                     <textarea asp-for="Description" class="form-control" style="height: 100px; resize: none;"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
-                <div class="form-group mb-2">
+                <div class="form-group">
                     <label asp-for="Performers" class="control-label">Исполнители</label>
                     <input asp-for="Performers" class="form-control" />
                     <span asp-validation-for="Performers" class="text-danger"></span>
                 </div>
-                <div class="form-group mb-2">
-                    <label asp-for="Status" class="control-label">Статус</label>
-                    <select asp-for="Status" class="form-control"></select>
-                    <span asp-validation-for="Status" class="text-danger"></span>
-                </div>
-                <div class="form-group mb-2">
+                <div class="form-group">
                     <label asp-for="ScheduledExecutionTime" class="control-label">Плановая трудоемкость, часов</label>
                     <input asp-for="ScheduledExecutionTime" class="form-control" />
                     <span asp-validation-for="ScheduledExecutionTime" class="text-danger"></span>
                 </div>
-                <!--<div class="form-group">
-                    <label asp-for="ParentId" class="control-label"></label>
-                    <select asp-for="ParentId" class ="form-control" asp-items="ViewBag.ParentId"></select>
-                </div>-->
                 <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-primary" />
+                    <input type="submit" value="Создать" class="btn btn-primary" />
                 </div>
             </form>
         </div>
     </div>
-}

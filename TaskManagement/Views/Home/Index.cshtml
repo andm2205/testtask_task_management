@@ -1,11 +1,18 @@
 ﻿@model IEnumerable<AppTask>
 
-<aside id="task_list_container">
-    <input type="button"
-        value="Создать новую задачу"
-        onclick="return jQueryAjaxOpenForm('@Url.Action("CreateTask", "Home")');" />
-    @await Html.PartialAsync("TaskList", Model)
+<aside id="aside_container">
+    <a class="btn"
+        onclick="return jQueryAjaxOpenForm('@Url.Action("CreateTaskView", "Home")');">
+        Создать новую задачу
+    </a>
+    <a class="btn"
+        onclick="return jQueryAjaxGetList('@Url.Action("TaskListView", "Home")');">
+        Обновить
+    </a>
+    <div id="task_list_container">
+        
+    </div>
 </aside>
 <article id="task_desc_container">
-    @await Html.PartialAsync("TaskDesc", null)
+    
 </article>

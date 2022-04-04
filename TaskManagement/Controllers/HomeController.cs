@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using System.Diagnostics;
 using TaskManagement.Models;
 
@@ -6,47 +7,57 @@ namespace TaskManagement.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IStringLocalizer<HomeController> _localizer;
         private readonly ApplicationDbContext _context;
 
-        public HomeController(ApplicationDbContext context)
+        public HomeController(ApplicationDbContext context, IStringLocalizer<HomeController> localizer)
         {
             _context = context;
+            _localizer = localizer;
+        }
+        public string GetResourceString(string name)
+        {
+            return _localizer[name];
         }
         public IActionResult Index()
         {
             return View();
         }
-        public IActionResult CreateTask()
+        public IActionResult CreateTaskView()
         {
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "CreateTask", null )});
+            return Json(new { html = Helper.RenderRazorViewToString(this, "CreateTask", null )});
         }
         [HttpGet]
-        public IActionResult GetTasks()
+        public IActionResult TaskListView()
         {
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_ViewAll", _context.Tasks.ToList()) });
+            return Json(new { html = Helper.RenderRazorViewToString(this, "TaskList", _context.Tasks.ToList()) });
         }
         [HttpPost]
-        public async Task<IActionResult> CreateTask([Bind("Name, Description, Performers, ScheduledExecutionTime")] AppTask appTask)
+        public IActionResult TaskDesc(AppTask appTask)
+        {
+            return Json(new { html = Helper.RenderRazorViewToString(this, "TaskDesc", appTask) });
+        }
+        [HttpPost]
+        public void CreateTask([Bind("Name, Description, Performers, ScheduledExecutionTime")] AppTask appTask)
         {
             appTask.RegistrationDate = DateTime.Now;
             appTask.Status = Status.Assigned;
             _context.Add(appTask);
-            await _context.SaveChangesAsync();
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_ViewAll", _context.Tasks.ToList()) });
+            _context.SaveChanges();
         }
-        [HttpPut]
-        public async Task<IActionResult> UpdateTask(AppTask appTask)
+        [HttpPost]
+        public void UpdateTask(AppTask appTask)
         {
             _context.Update(appTask);
-            await _context.SaveChangesAsync();
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_ViewAll", _context.Tasks.ToList()) });
+            _context.SaveChanges();
+            Console.WriteLine("task updated");
         }
-        [HttpDelete]
-        public async Task<IActionResult> DeleteTask(AppTask appTask)
+        [HttpPost]
+        public void DeleteTask(AppTask appTask)
         {
             _context.Remove(appTask);
-            await _context.SaveChangesAsync();
-            return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_ViewAll", _context.Tasks.ToList()) });
+            _context.SaveChanges();
+            Console.WriteLine("task deleted");
         }
     }
 }

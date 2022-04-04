@@ -4,7 +4,23 @@
     {
         @foreach(var appTask in Model)
         {
-            <li asp-controller="Home" asp-action="TaskDesc" class="task">@appTask.Name</li>
+            
+            <li class="task">
+                <form 
+                    asp-action="TaskDesc" 
+                    onsubmit="return jQueryAjaxOpenFormWithForm(this);">
+                    <input type="hidden" asp-for="@appTask.Id"/>
+                    <input type="hidden" asp-for="@appTask.Name"/>
+                    <input type="hidden" asp-for="@appTask.Description"/>
+                    <input type="hidden" asp-for="@appTask.Performers"/>
+                    <input type="hidden" asp-for="@appTask.RegistrationDate"/>
+                    <input type="hidden" asp-for="@appTask.Status"/>
+                    <input type="hidden" asp-for="@appTask.ScheduledExecutionTime"/>
+                    <input type="hidden" asp-for="@appTask.ActualExecutionTime"/>
+                    <input type="hidden" asp-for="@appTask.CompletionDate"/>
+                    <input type="submit" value="@appTask.Name" class="btn" />
+                </form>
+            </li>
         }
     }
 </ul>
