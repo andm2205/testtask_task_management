@@ -4,8 +4,11 @@
 {
     <div class="row">
         <div class="col">
-            <form class="classic-form" onsubmit="return jQueryAjaxActionOnTask(this, '@Url.Action("UpdateTask", "Home")');">
+            <form 
+            class="classic-form" 
+            onsubmit="return jQueryAjaxActionOnTask(this, '@Url.Action("UpdateTask", "Home")');">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <p>@Model.Id</p>
                 <input type="hidden" asp-for="Id" />
                 <div class="form-group">
                     <label asp-for="Name" class="control-label">Название</label>
@@ -47,6 +50,9 @@
                     <input asp-for="CompletionDate" class="form-control" value="@Model.CompletionDate?.ToString("yyyy-MM-ddThh:mm")"/>
                     <span asp-validation-for="CompletionDate" class="text-danger"></span>
                 </div>
+                <input type="hidden" value="@Model.ParentId" asp-for="ParentId"/>
+                <input type="hidden" value="@Model.Parent" asp-for="Parent"/>
+                <input type="hidden" value="@Model.Children" asp-for="Children"/>
                 <div class="form-group">
                     <input type="submit" value="Обновить" class="btn btn-primary"/>
                 </div>
@@ -56,6 +62,15 @@
                 <input type="hidden" asp-for="@Model.Id"/>
                 <div class="form-group">
                     <input type="submit" value="Удалить" class="btn btn-danger"/>
+                </div>
+            </form>
+            <form class="classic-form" asp-action="CreateTaskView"
+                onsubmit="return jQueryAjaxOpenFormWithForm(this);">
+                @Html.Hidden("Id", Model.Id)
+                @Html.Hidden("ParentId", Model.ParentId)
+                @Html.Hidden("Parent", Model.Parent)
+                <div class="form-group">
+                    <input type="submit" value="Создать подзадачу" class="btn btn-danger"/>
                 </div>
             </form>
         </div>

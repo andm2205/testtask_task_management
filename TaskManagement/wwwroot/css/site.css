@@ -22,11 +22,18 @@ body {
 main {
     height: 100%;
     width: 100%;
+}
+
+#task-info {
+    height: 100%;
+    width: 100%;
     display: flex;
     justify-content: center;
     flex-wrap: nowrap;
     align-items: stretch;
 }
+
+
 
 aside#aside_container {
     width: 500px;
@@ -46,8 +53,11 @@ ul#task_list {
 }
 
 ul#task_list li.task {
+}
+
+ul#task_list li.task input {
     background-color: #A5A5A5;
-    margin: 5px;
+    margin: 2px;
 }
 
 form.classic-form {
@@ -58,3 +68,8 @@ form.classic-form {
 form.classic-form > .form-group {
     margin-bottom: 10px;
 }
+
+article#task-tree {
+    height: 32px;
+}
+

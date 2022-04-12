@@ -1,0 +1,22 @@
+﻿@model AppTask
+<form
+    asp-action="TaskDesc" 
+    onsubmit="return !!(jQueryAjaxOpenFormWithForm(this) & jQueryAjaxPrintTaskTree(this));">
+    @if(Model == null)
+        {
+            <p>error</p>
+        }
+        else{
+    <input type="hidden" value="@Model.Id" asp-for="Id"/>
+    <input type="hidden" value="@Model.Name" asp-for="Name"/>
+    <input type="hidden" value="@Model.Description" asp-for="Description"/>
+    <input type="hidden" value="@Model.Performers" asp-for="Performers"/>
+    <input type="hidden" value="@Model.RegistrationDate" asp-for="RegistrationDate"/>
+    <input type="hidden" value="@Model.Status" asp-for="Status"/>
+    <input type="hidden" value="@Model.ScheduledExecutionTime" asp-for="ScheduledExecutionTime"/>
+    <input type="hidden" value="@Model.ActualExecutionTime" asp-for="ActualExecutionTime"/>
+    <input type="hidden" value="@Model.CompletionDate" asp-for="CompletionDate"/>
+    <input type="hidden" value="@Model.ParentId" asp-for="ParentId"/>
+        <input type="submit" value="@Model.Name" class="btn" />
+    }
+</form>

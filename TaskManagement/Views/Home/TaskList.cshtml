@@ -2,24 +2,47 @@
 <ul id="task_list">
     @if(Model != null)
     {
-        @foreach(var appTask in Model)
+        foreach(var appTask in Model)
         {
-            
             <li class="task">
-                <form 
-                    asp-action="TaskDesc" 
-                    onsubmit="return jQueryAjaxOpenFormWithForm(this);">
-                    <input type="hidden" asp-for="@appTask.Id"/>
-                    <input type="hidden" asp-for="@appTask.Name"/>
-                    <input type="hidden" asp-for="@appTask.Description"/>
-                    <input type="hidden" asp-for="@appTask.Performers"/>
-                    <input type="hidden" asp-for="@appTask.RegistrationDate"/>
-                    <input type="hidden" asp-for="@appTask.Status"/>
-                    <input type="hidden" asp-for="@appTask.ScheduledExecutionTime"/>
-                    <input type="hidden" asp-for="@appTask.ActualExecutionTime"/>
-                    <input type="hidden" asp-for="@appTask.CompletionDate"/>
-                    <input type="submit" value="@appTask.Name" class="btn" />
-                </form>
+                @if(appTask.Parent == null)
+                {
+                    @await Html.PartialAsync("AppTask", appTask)
+                    uint layerNum = 1;
+                    if (appTask.Children == null)
+                        continue;
+                    var enumerator = appTask.Children.GetEnumerator();
+                    enumerator.MoveNext();
+                    while(true)
+                    {
+                        var currentTask = enumerator.Current;
+                        <li class="task" style="margin-left: @(layerNum * 30)px">
+                            @await Html.PartialAsync("AppTask", currentTask)
+                        </li>
+
+                        if (enumerator.Current.Children != null && enumerator.Current.Children.Count > 0)
+                        {
+                            ++layerNum;
+                            enumerator = enumerator.Current.Children.GetEnumerator();
+                            enumerator.MoveNext();
+                        }
+                        else if (enumerator.MoveNext())
+                            continue;
+                        else
+                        {
+                            var parentTask = currentTask.Parent;
+                            if (parentTask == null)
+                                break;
+                            if (parentTask.Parent == null)
+                                break;
+                            enumerator = parentTask.Parent.Children.GetEnumerator();
+                            while (enumerator.MoveNext() && parentTask != enumerator.Current) ;
+                            if (!enumerator.MoveNext())
+                                break;
+                            --layerNum;
+                        }
+                    }
+                }
             </li>
         }
     }

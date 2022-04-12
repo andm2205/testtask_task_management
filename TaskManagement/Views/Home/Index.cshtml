@@ -1,6 +1,8 @@
 ﻿@model IEnumerable<AppTask>
 
-<aside id="aside_container">
+<article id="task-tree"></article>
+<div id="task-info">
+    <aside id="aside_container">
     <a class="btn"
         onclick="return jQueryAjaxOpenForm('@Url.Action("CreateTaskView", "Home")');">
         Создать новую задачу
@@ -16,3 +18,4 @@
 <article id="task_desc_container">
     
 </article>
+</div>

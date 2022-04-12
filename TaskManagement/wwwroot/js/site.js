@@ -75,3 +75,24 @@ jQueryAjaxOpenFormWithForm = form => {
         console.log(ex)
     }
 }
+
+jQueryAjaxPrintTaskTree = form => {
+    try {
+        $.ajax({
+            type: 'POST',
+            data: new FormData(form),
+            url: '/Home/TaskTree',
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                $('#task-tree').html(res.html)
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+        return false;
+    } catch (ex) {
+        console.log(ex)
+    }
+}
