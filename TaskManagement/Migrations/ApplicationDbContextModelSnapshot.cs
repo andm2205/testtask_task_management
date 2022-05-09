@@ -64,7 +64,7 @@ namespace TaskManagement.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("TaskManagement.Models.AppTask", b =>
