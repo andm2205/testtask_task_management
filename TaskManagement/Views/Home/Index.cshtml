@@ -1,15 +1,17 @@
 ﻿@model IEnumerable<AppTask>
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 <article id="task-tree"></article>
 <div id="task-info">
     <aside id="aside_container">
     <a class="btn"
-        onclick="return jQueryAjaxOpenForm('@Url.Action("CreateTaskView", "Home")');">
-        Создать новую задачу
+        onclick="return OpenForm('@Url.Action("CreateTaskView", "Home")');">
+        @Localizer["Buttons.Create"]
     </a>
     <a class="btn"
-        onclick="return jQueryAjaxGetList('@Url.Action("TaskListView", "Home")');">
-        Обновить
+        onclick="return !!(GetList('@Url.Action("TaskListView", "Home")') & OpenForm('@Url.Action("TaskDesc", "Home")'));">
+        @Localizer["Buttons.Update"]
     </a>
     <div id="task_list_container">
         

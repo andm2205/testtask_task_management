@@ -6,13 +6,13 @@ namespace TaskManagement.Models
 {
     public enum Status
     {
-        [Display(Name = "Назначена")]
+        [Display(Name = "Assigned")]
         Assigned,
-        [Display(Name = "Выполняется")]
+        [Display(Name = "InProgress")]
         InProgress,
-        [Display(Name = "Приостановлена")]
+        [Display(Name = "Suspended")]
         Suspended,
-        [Display(Name = "Завершена")]
+        [Display(Name = "Completed")]
         Completed
     }
 }

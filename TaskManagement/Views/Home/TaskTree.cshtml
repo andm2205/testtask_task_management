@@ -1,7 +1,6 @@
 ﻿@model string
 
-
-
-@{
-     <p>@Model</p>
+@if(!String.IsNullOrEmpty(Model))
+{
+    <p>@Model</p>
 }

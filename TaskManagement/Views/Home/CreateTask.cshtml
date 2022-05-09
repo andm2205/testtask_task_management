@@ -1,10 +1,12 @@
 ﻿@model TaskManagement.Models.AppTask
-
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
 
 <div class="row">
         <div class="col">
-            <form class="classic-form" onsubmit="return jQueryAjaxActionOnTask(this, '@Url.Action("CreateTask", "Home")')">
+            <form 
+            class="classic-form" 
+            onsubmit="return !!(ActionOnTask(this, '@Url.Action("CreateTask", "Home")', 'POST') & OpenForm('@Url.Action("TaskDesc", "Home")') & GetList('@Url.Action("TaskListView", "Home")'));">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Name" class="control-label"></label>
@@ -12,17 +14,17 @@
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Description" class="control-label">Описание</label>
+                    <label asp-for="Description" class="control-label"></label>
                     <textarea asp-for="Description" class="form-control" style="height: 100px; resize: none;"></textarea>
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Performers" class="control-label">Исполнители</label>
+                    <label asp-for="Performers" class="control-label"></label>
                     <input asp-for="Performers" class="form-control" />
                     <span asp-validation-for="Performers" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="ScheduledExecutionTime" class="control-label">Плановая трудоемкость, часов</label>
+                    <label asp-for="ScheduledExecutionTime" class="control-label"></label>
                     <input asp-for="ScheduledExecutionTime" class="form-control" />
                     <span asp-validation-for="ScheduledExecutionTime" class="text-danger"></span>
                 </div>
@@ -30,7 +32,7 @@
                 <input asp-for="ParentId" type="hidden" value="@Model?.ParentId" />
                 <input asp-for="Parent" type="hidden" value="@Model?.Parent" />
                 <div class="form-group">
-                    <input type="submit" value="Создать" class="btn btn-primary" />
+                    <input type="submit" value="@Localizer["Buttons.Create"]" class="btn btn-primary" />
                 </div>
             </form>
         </div>

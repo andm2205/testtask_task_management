@@ -117,22 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CreateButton" xml:space="preserve">
-    <value>Создать задачу</value>
+  <data name="Buttons.Create" xml:space="preserve">
+    <value>Создать</value>
   </data>
-  <data name="ProgramName" xml:space="preserve">
-    <value>Task Management</value>
-  </data>
-  <data name="Status1" xml:space="preserve">
-    <value>Назначена</value>
-  </data>
-  <data name="Status2" xml:space="preserve">
-    <value>Выполняется</value>
-  </data>
-  <data name="Status3" xml:space="preserve">
-    <value>Приостановлена</value>
-  </data>
-  <data name="Status4" xml:space="preserve">
-    <value>Завершена</value>
+  <data name="Buttons.Update" xml:space="preserve">
+    <value>Обновить</value>
   </data>
 </root>

@@ -1,7 +1,8 @@
 ﻿@model AppTask
+
 <form
     asp-action="TaskDesc" 
-    onsubmit="return !!(jQueryAjaxOpenFormWithForm(this) & jQueryAjaxPrintTaskTree(this));">
+    onsubmit="return !!(OpenFormWithData(this));">
     @if(Model == null)
         {
             <p>error</p>

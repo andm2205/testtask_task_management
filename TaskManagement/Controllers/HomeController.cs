@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using System.Diagnostics;
+using System.Data;
 using TaskManagement.Models;
 
 namespace TaskManagement.Controllers
@@ -16,13 +17,9 @@ namespace TaskManagement.Controllers
             _context = context;
             _localizer = localizer;
         }
-        public ActionResult AppTask()
+        public IActionResult AppTask()
         {
             return PartialView("AppTask");
-        }
-        public string GetResourceString(string name)
-        {
-            return _localizer[name];
         }
         public IActionResult Index()
         {
@@ -49,58 +46,195 @@ namespace TaskManagement.Controllers
         [HttpGet]
         public IActionResult TaskListView()
         {
-            return Json(new { html = Helper.RenderRazorViewToString(this, "TaskList", _context.Tasks.ToList()) });
+            try
+            {
+                return Json(new { html = Helper.RenderRazorViewToString(this, "TaskList", _context.Tasks.ToList()) });
+            }
+            catch (Exception exception)
+            {
+                return Json(new {error = true, message = exception.Message});
+            }
+        }
+        [HttpGet]
+        public IActionResult TaskDesc()
+        {
+            return Json(new { html = Helper.RenderRazorViewToString(this, "TaskDesc", null), message = _localizer["Message1"].Value });
         }
         [HttpPost]
         public IActionResult TaskDesc(AppTask appTask)
         {
-            return Json(new { html = Helper.RenderRazorViewToString(this, "TaskDesc", appTask) });
+            return Json(new { html = Helper.RenderRazorViewToString(this, "TaskDesc", appTask), message = _localizer["Message1"].Value });
         }
         [HttpPost]
-        public void CreateTask([Bind("Name, Description, Performers, ScheduledExecutionTime, ParentId, Parent")] AppTask appTask)
+        public IActionResult CreateTask([Bind("Name, Description, Performers, ScheduledExecutionTime, ParentId, Parent")] AppTask appTask)
         {
-            appTask.RegistrationDate = DateTime.Now;
-            appTask.Status = Status.Assigned;
-            _context.Tasks.Add(appTask);
-            _context.SaveChanges();
-        }
-        [HttpPost]
-        public void UpdateTask(AppTask appTask)
-        {
-            _context.Tasks.Update(appTask);
-            _context.SaveChanges();
-        }
-        [HttpPost]
-        public void DeleteTask(AppTask rootAppTask)
-        {
-            if (rootAppTask == null)
-                return;
-            rootAppTask = _context.Tasks.Single(a => a.Id == rootAppTask.Id);
-            List <AppTask> appTasks = new List<AppTask>();
-            appTasks.Add(rootAppTask);
-            for (int a = 0; a < appTasks.Count; ++a)
+            try
             {
-                appTasks.AddRange(_context.Tasks.Where(b => b.ParentId == appTasks[a].Id));
+                appTask.RegistrationDate = DateTime.Now;
+                appTask.Status = Status.Assigned;
+                
+                if(appTask.ParentId != null)
+                {
+                    var ancestors = _context.Tasks.FromSqlRaw(@"SELECT * FROM GetParents(@id)", new SqlParameter()
+                    {
+                        ParameterName = "@id",
+                        Value = appTask.ParentId,
+                        SqlDbType = SqlDbType.BigInt
+                    });
+                    foreach (var a in ancestors)
+                        a.ScheduledExecutionTime += appTask.ScheduledExecutionTime;
+                    _context.Tasks.UpdateRange(ancestors);
+                }
+                _context.Tasks.Add(appTask);
+                _context.SaveChanges();
+
+                return Json(new { message = _localizer["Message1"].Value });
             }
-            for(int a = appTasks.Count - 1; a >= 0; --a)
+            catch (Exception exception)
             {
-                _context.Tasks.Remove(appTasks[a]);
+                return Json(new { message = exception.Message, error = true });
             }
-            _context.SaveChanges();
+        }
+        [HttpPost]
+        public IActionResult UpdateTask(AppTask appTask)
+        {
+            try
+            {
+                AppTask oldAppTask = _context.Tasks.AsNoTracking().Single(a => a.Id == appTask.Id);
+                if (appTask.Status != oldAppTask.Status
+                    && appTask.Status == Status.Completed && oldAppTask.Status != Status.InProgress)
+                    throw new Exception(_localizer["Message2"].Value);
+                if (appTask.Status != oldAppTask.Status
+                    && appTask.Status == Status.Suspended && oldAppTask.Status != Status.InProgress)
+                    throw new Exception(_localizer["Message3"].Value);
+                if (appTask.Status == Status.Completed && oldAppTask.Status != Status.Completed)
+                {
+                    var children = _context.Tasks.FromSqlRaw(@"SELECT * FROM GetTree(@id)", new SqlParameter()
+                    {
+                        ParameterName = "@id",
+                        Value = appTask.Id,
+                        SqlDbType = SqlDbType.BigInt
+                    });
+                    foreach (var a in children)
+                        if (a.Status != Status.InProgress && a.Status != Status.Completed)
+                            throw new Exception(_localizer["Message2"].Value);
+                        else
+                            a.Status = Status.Completed;
+                    _context.Tasks.UpdateRange(children);
+                }
+                _context.Tasks.Update(appTask);
+                if(appTask.ParentId != null)
+                {
+                    if (appTask.ActualExecutionTime != oldAppTask.ActualExecutionTime)
+                    {
+                        var ancestors = _context.Tasks.FromSqlRaw(@"SELECT * FROM GetParents(@id)", new SqlParameter()
+                        {
+                            ParameterName = "@id",
+                            Value = appTask.ParentId,
+                            SqlDbType = SqlDbType.BigInt
+                        });
+                        foreach (var a in ancestors)
+                            a.ActualExecutionTime += appTask.ActualExecutionTime - oldAppTask.ActualExecutionTime;
+                        _context.Tasks.UpdateRange(ancestors);
+                    }
+                    if (appTask.ScheduledExecutionTime != oldAppTask.ScheduledExecutionTime)
+                    {
+                        var ancestors = _context.Tasks.FromSqlRaw(@"SELECT * FROM GetParents(@id)", new SqlParameter()
+                        {
+                            ParameterName = "@id",
+                            Value = appTask.ParentId,
+                            SqlDbType = SqlDbType.BigInt
+                        });
+                        foreach (var a in ancestors)
+                            a.ScheduledExecutionTime += appTask.ScheduledExecutionTime - oldAppTask.ScheduledExecutionTime;
+                        _context.Tasks.UpdateRange(ancestors);
+                    }
+                }
+                _context.SaveChanges();
+                return Json(new { message = _localizer["Message1"].Value });
+            }
+            catch(Exception exception)
+            {
+                return Json(new { message = exception.Message, error = true });
+            }
+        }
+        [HttpPost]
+        public IActionResult DeleteTask(AppTask appTask)
+        {
+            try
+            {
+                appTask = _context.Tasks.AsNoTracking().Single(a => a.Id == appTask.Id);
+
+                if(appTask.ParentId != null)
+                {
+                    if (appTask.ActualExecutionTime > 0)
+                    {
+                        var ancestors = _context.Tasks.FromSqlRaw(@"SELECT * FROM GetParents(@id)", new SqlParameter()
+                        {
+                            ParameterName = "@id",
+                            Value = appTask.ParentId,
+                            SqlDbType = SqlDbType.BigInt
+                        });
+                        foreach (var a in ancestors)
+                            a.ActualExecutionTime -= appTask.ActualExecutionTime;
+                        _context.Tasks.UpdateRange(ancestors);
+                    }
+
+                    if (appTask.ScheduledExecutionTime > 0)
+                    {
+                        var ancestors = _context.Tasks.FromSqlRaw(@"SELECT * FROM GetParents(@id)", new SqlParameter()
+                        {
+                            ParameterName = "@id",
+                            Value = appTask.ParentId,
+                            SqlDbType = SqlDbType.BigInt
+                        });
+                        foreach (var a in ancestors)
+                            a.ScheduledExecutionTime -= appTask.ScheduledExecutionTime;
+                        _context.Tasks.UpdateRange(ancestors);
+                    }
+                }
+
+                _context.Tasks.RemoveRange(
+                        _context.Tasks.FromSqlRaw(
+                        "SELECT * FROM GetTree(@id);",
+                        new SqlParameter()
+                        {
+                            ParameterName = "@id",
+                            Value = appTask.Id,
+                            SqlDbType = SqlDbType.BigInt
+                        }));
+
+                _context.SaveChanges();
+
+                return Json(new { message = _localizer["Message1"].Value });
+            }
+            catch (Exception exception)
+            {
+                return Json(new { message = exception.Message, error = true });
+            }
         }
         [HttpPost]
         public IActionResult TaskTree(AppTask appTask)
         {
-            var tasks = _context.Tasks.ToList();
-            appTask = tasks.Single(a => a.Id == appTask.Id);
-            List<string> names = new List<string>();
-            while (appTask != null)
+            try
             {
-                names.Add(appTask.Name);
-                appTask = appTask.Parent;
+                return Json(new
+                {
+                    html = Helper.RenderRazorViewToString(this, "TaskTree", string.Join(" > ", _context.Tasks.FromSqlRaw(
+                        "SELECT * FROM GetParents(@id)",
+                        new SqlParameter()
+                        {
+                            ParameterName = "@id",
+                            Value = appTask.Id,
+                            SqlDbType = SqlDbType.BigInt
+                        }).Select(a => a.Name).ToArray().Reverse())),
+                    message = _localizer["Message1"].Value
+                });
             }
-            names.Reverse();
-            return Json(new { html = Helper.RenderRazorViewToString(this, "TaskTree", string.Join(" > ", names)) });
+            catch(Exception exception)
+            {
+                return Json(new { message = exception.Message, error = true });
+            }
         }
     }
 }
